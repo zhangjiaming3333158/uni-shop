@@ -1,20 +1,8 @@
-<template>
-  <view>
-
-  </view>
-</template>
-
-<script>
-// 按需导入 mapGetters 这个辅助方法
 import { mapGetters } from 'vuex'
-import badgeMix from '@/mixins/tabbar-badge.js'
+
+// 导出一个 mixin 对象
 export default {
-	mixins: [badgeMix],
-  data() {
-    return {}
-  },
   computed: {
-    // 将 m_cart 模块中的 total 映射为当前页面的计算属性
     ...mapGetters('m_cart', ['total']),
   },
   onShow() {
@@ -25,13 +13,9 @@ export default {
     setBadge() {
       // 调用 uni.setTabBarBadge() 方法，为购物车设置右上角的徽标
       uni.setTabBarBadge({
-        index: 2, // 索引
+        index: 2,
         text: this.total + '', // 注意：text 的值必须是字符串，不能是数字
       })
     },
   },
 }
-</script>
-
-<style lang="scss">
-</style>

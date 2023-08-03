@@ -37,6 +37,8 @@
 </template>
 
 <script>
+// 按需导入 mapMutations 这个辅助方法
+import { mapGetters, mapMutations } from 'vuex' //引入mapGetters
 export default {
   data() {
     return {
@@ -51,7 +53,7 @@ export default {
         {
           icon: 'cart',
           text: '购物车',
-          info: 2,
+          // info: 2,
         },
       ],
       // 右侧按钮组的配置对象
@@ -106,6 +108,43 @@ export default {
         })
       }
     },
+    // 把 m_cart 模块中的 addToCart 方法映射到当前页面使用
+    ...mapMutations('m_cart', ['addToCart']),
+    // 右侧按钮的点击事件处理函数
+    buttonClick(e) {
+      console.log(e)
+      // 1. 判断是否点击了 加入购物车 按钮
+      if (e.content.text === '加入购物车') {
+        // 2. 组织一个商品的信息对象
+        const goods = {
+          goods_id: this.goods_info.goods_id, // 商品的Id
+          goods_name: this.goods_info.goods_name, // 商品的名称
+          goods_price: this.goods_info.goods_price, // 商品的价格
+          goods_count: 1, // 商品的数量
+          goods_small_logo: this.goods_info.goods_small_logo, // 商品的图片
+          goods_state: true, // 商品的勾选状态
+        }
+
+        // 3. 通过 this 调用映射过来的 addToCart 方法，把商品信息对象存储到购物车中
+        this.addToCart(goods)
+      }
+    },
+  },
+  computed: {
+    // 把 m_cart 模块中名称为 total 的 getter 映射到当前页面中使用
+    ...mapGetters('m_cart', ['total']),
+  },
+  watch: {
+    // 1. 监听 total 值的变化，通过第一个形参得到变化后的新值
+    total(newVal) {
+      // 2. 通过数组的 find() 方法，找到购物车按钮的配置对象
+      const findResult = this.options.find((x) => x.text === '购物车')
+
+      if (findResult) {
+        // 3. 动态为购物车按钮的 info 属性赋值
+        findResult.info = newVal
+      }
+    },
   },
 }
 </script>
@@ -119,6 +158,7 @@ swiper {
     height: 100%;
   }
 }
+
 // 商品信息区域的样式
 .goods-info-box {
   padding: 10px;
@@ -138,6 +178,7 @@ swiper {
       font-size: 13px;
       padding-right: 10px;
     }
+
     // 收藏区域
     .favi {
       width: 120px;
@@ -158,6 +199,7 @@ swiper {
     color: gray;
   }
 }
+
 .goods-detail-container {
   // 给页面外层的容器，添加 50px 的内padding，
   // 防止页面内容被底部的商品导航组件遮盖
